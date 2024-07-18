@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: kiali-bookinfo
+ namespace: bookinfo
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: Role
+ name: kiali-bookinfo
+subjects:
+- kind: ServiceAccount
+  name: test
+  namespace: default
