@@ -8,6 +8,5 @@ roleRef:
  kind: Role
  name: kiali-bookinfo
 subjects:
-- kind: ServiceAccount
-  name: test
-  namespace: default
+- kind: Group
+  name: oidc:test
