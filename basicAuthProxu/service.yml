@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kiali-proxy
+  namespace: istio-system
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: kiali-proxy
+
