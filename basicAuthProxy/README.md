@@ -7,11 +7,11 @@ Create the auth data:
 And modify in the secret yaml file. 
 
 ```
-rl -fsSL https://raw.githubusercontent.com/josunect/yamls/refs/heads/main/basicAuthProxy/secret.yml \
+curl -fsSL https://raw.githubusercontent.com/josunect/yamls/refs/heads/main/basicAuthProxy/secret.yml \
 | sed "s|<BASE64_OUTPUT>|$(htpasswd -nb myuser mypwd | base64 -w0)|g" \
 | kubectl apply -f -
 kubectl apply -f https://raw.githubusercontent.com/josunect/yamls/refs/heads/main/basicAuthProxy/configMap.yml
 kubectl apply -f https://raw.githubusercontent.com/josunect/yamls/refs/heads/main/basicAuthProxy/deployment.yml
-kubkubectl apply -f https://raw.githubusercontent.com/josunect/yamls/refs/heads/main/basicAuthProxy/service.yml
+kubectl apply -f https://raw.githubusercontent.com/josunect/yamls/refs/heads/main/basicAuthProxy/service.yml
 
 ```
