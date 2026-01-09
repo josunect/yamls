@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-bearer-token
+  namespace: istio-system
+type: Opaque
+data:
+  TOKEN: bWktdG9rZW4tc2VjcmV0  # base64 of "mi-token-secreto"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-nginx-config
+  namespace: istio-system
+data:
+  default.conf.template: |
+    server {
+      listen 80;
+
+      location / {
+        if ($http_authorization != "Bearer $TOKEN") {
+          return 401;
+        }
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://grafana.istio-system:3000;
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-proxy
+  namespace: istio-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana-proxy
+  template:
+    metadata:
+      labels:
+        app: grafana-proxy
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          env:
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-bearer-token
+                  key: TOKEN
+          command: ["/bin/sh", "-c"]
+          args:
+            - envsubst '$TOKEN' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: grafana-nginx-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-proxy
+  namespace: istio-system
+spec:
+  selector:
+    app: grafana-proxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
