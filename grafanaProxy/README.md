@@ -56,3 +56,25 @@ Port forward the service:
 Test (token by default: `mi-token-secreto`):
 
 `curl -k -i -H "Authorization: Bearer mi-token-secreto" https://localhost:30001/`
+
+## Patch the Kiali CR
+
+```
+kubectl -n istio-system patch kiali NAME --type merge -p '{
+  "spec": {
+    "external_services": {
+      "grafana": {
+        "enabled": true,
+        "external_url": "https://grafana-proxy.istio-system:3000",
+        "internal_url": "https://grafana-proxy.istio-system:3000",
+        "auth": {
+          "type": "bearer",
+          "token": "secret:grafana-bearer-token:TOKEN",
+          "use_kiali_token": false,
+          "insecure_skip_verify": true
+        }
+      }
+    }
+  }
+}'
+```
