@@ -49,6 +49,8 @@ In tls.key:
 Apply the yaml: 
 `kubectl apply -f grafana.yaml`
 
-Test: 
+Port forward the service: 
 `kubectl -n istio-system port-forward svc/grafana-proxy 30001:3000`
+
+Test:
 `curl -k -i -H "Authorization: Bearer kiali-test-token" https://localhost:30001/`
