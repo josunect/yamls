@@ -50,5 +50,5 @@ Apply the yaml:
 `kubectl apply -f grafana.yaml`
 
 Test: 
-`kubectl -n istio-system port-forward svc/grafana-bearer-proxy 30001:3000
-curl -k -i -H "Authorization: Bearer kiali-test-token" https://localhost:30001/`
+`kubectl -n istio-system port-forward svc/grafana-proxy 30001:3000`
+`curl -k -i -H "Authorization: Bearer kiali-test-token" https://localhost:30001/`
