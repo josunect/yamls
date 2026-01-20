@@ -1,4 +1,4 @@
-Generate certificates: 
+Generate certificates:
 
 ```
 TMPDIR=/tmp/grafana-bearer-proxy-tls
@@ -38,19 +38,21 @@ Verify the cert
 openssl x509 -in "$TMPDIR/tls.crt" -noout -subject -issuer -ext subjectAltName
 ```
 
-In tls.cert: 
+Create the Kubernetes TLS secret (IMPORTANT: not in `grafana.yaml`):
 
-`cat "$TMPDIR/tls.crt"`
+```
+kubectl -n istio-system create secret tls grafana-proxy-tls \
+  --cert="$TMPDIR/tls.crt" \
+  --key="$TMPDIR/tls.key" \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
 
-In tls.key: 
-
-`cat "$TMPDIR/tls.key"`
-
-Apply the yaml: 
+Apply the yaml:
 `kubectl apply -f grafana.yaml`
 
-Port forward the service: 
+Port forward the service:
 `kubectl -n istio-system port-forward svc/grafana-proxy 30001:3000`
 
-Test:
-`curl -k -i -H "Authorization: Bearer kiali-test-token" https://localhost:30001/`
+Test (token by default: `mi-token-secreto`):
+
+`curl -k -i -H "Authorization: Bearer mi-token-secreto" https://localhost:30001/`
